@@ -9,7 +9,7 @@ const CheckBox = ({ label, selected = false, onchange = () => {} }) => {
       <input
         type="checkbox"
         checked={selected}
-        onchange={(e) => onchange(e.target.checked, label)}
+        onChange={(e) => onchange(e.target.checked, label)}
       />
       <span className="font-light select-none">{label}</span>
     </label>
@@ -23,7 +23,7 @@ const RadioButton = ({ label, selected = false, onchange = () => {} }) => {
         type="radio"
         name="sortOption"
         checked={selected}
-        onchange={() => onchange(label)}
+        onChange={() => onchange(label)}
       />
       <span className="font-light select-none">{label}</span>
     </label>
@@ -58,7 +58,7 @@ export const AllRooms = () => {
           >
             <img
               onClick={() => {
-                navigate("/rooms/${room._id}"), scrollTo(0, 0);
+                navigate(`/rooms/${room._id}`), scrollTo(0, 0);
               }}
               src={room.images[0]}
               alt="hotel-img"
@@ -69,7 +69,7 @@ export const AllRooms = () => {
               <p className="text-gray-500">{room.hotel.city}</p>
               <p
                 onClick={() => {
-                  navigate("/rooms/${room._id}"), scrollTo(0, 0);
+                  navigate(`/rooms/${room._id}`), scrollTo(0, 0);
                 }}
                 className="text-gray-800 text-3xl font-playfair "
               >
@@ -112,7 +112,7 @@ export const AllRooms = () => {
       <div className="bg-white w-80 border border-gray-300 text-gray-600  max-lg:mb-8 min-lg:mt-16">
         <div
           className={
-            'flex items-center justify-between px-5 py-2.5 min-lg:border-b border-gray-300 ${openFilters && "border-b"}'
+            'flex items-center justify-between px-5 py-2.5 min-lg:border-b border-gray-300 ${openFilters ? "border-b" : ""}'
           }
         >
           <p className="text-base font-medium text-gray-800">FILTERS</p>
@@ -128,7 +128,7 @@ export const AllRooms = () => {
         </div>
         <div
           className={
-            '${openFilters ? "h-auto" : "h-0 lg:h-auto overflow-hidden transition-all duration-700"}'
+            `${openFilters ? "h-auto" : "h-0 lg:h-auto overflow-hidden transition-all duration-700"}`
           }
         >
           <div className="px-5 pt-5">
@@ -140,7 +140,7 @@ export const AllRooms = () => {
           <div className="px-5 pt-5">
             <p className="font-medium text-gray-800 pb-2">Price Range</p>
             {priceRanges.map((range, index) => (
-              <CheckBox key={index} label={"$ ${range}"} />
+              <CheckBox key={index} label={`$ ${range}`} />
             ))}
           </div>
           <div className="px-5 pt-5 pb-7">
