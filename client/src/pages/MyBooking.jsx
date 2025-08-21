@@ -1,9 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tittle } from "../components/Tittle";
-import { assets, userBookingsDummyData } from "../assets/assets";
+import { assets } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 export const MyBooking = () => {
-  const [bookings, setBookings] = useState(userBookingsDummyData);
+  const { axios, getToken, user } = useAppContext();
+  const [bookings, setBookings] = useState([]);
+  const fetchUserBookings = async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/user", {
+        header: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchUserBookings();
+    }
+  }, [user]);
+
   return (
     <div className="py-28 md:pb-35 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32">
       <Tittle
@@ -67,14 +91,14 @@ export const MyBooking = () => {
             <div className="flex flex-col items-start justify-center pt-3 ">
               <div className="flex items-center gap-2">
                 <div
-                  className={
-                    `h-3 w-3 rounded-full ${booking.isPaid ? "bg-green-500" : "bg-red-500" }`
-                  }
+                  className={`h-3 w-3 rounded-full ${
+                    booking.isPaid ? "bg-green-500" : "bg-red-500"
+                  }`}
                 ></div>
                 <p
-                  className={
-                    `text-sm ${booking.isPaid ? "text-green-500" : "text-red-500"}`
-                  }
+                  className={`text-sm ${
+                    booking.isPaid ? "text-green-500" : "text-red-500"
+                  }`}
                 >
                   {booking.isPaid ? "paid" : "Unpaid"}
                 </p>
