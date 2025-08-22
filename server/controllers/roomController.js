@@ -6,7 +6,7 @@ import Room from "../models/Room.js";
 export const createRoom = async (req, res) => {
   try {
     const { roomType, pricePerNight, amenities } = req.body;
-    const hotel = await Hotel.findone({ owner: req.auth.userId });
+    const hotel = await Hotel.findOne({ owner: req.auth.userId });
 
     if (!hotel) {
       return res.json({ success: false, message: "Hotel not found" });
@@ -14,7 +14,6 @@ export const createRoom = async (req, res) => {
 
     //upload images to clodinary
     const uploadedImages = req.files.map(async (file) => {
-      await cloudinary.uploader.upload(file.path);
       const response = await cloudinary.uploader.upload(file.path);
       return response.secure_url;
     });

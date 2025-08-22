@@ -14,7 +14,10 @@ import bookingRouter from "./routes/bookingRoutes.js";
 connectDB(); 
 connectCloudinary();
 const app = express();
-app.use(cors()); //Enable cross-Origin Resource Sharing
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  credentials: true
+})); //Enable cross-Origin Resource Sharing
 
 //middleware
 app.use(express.json());
