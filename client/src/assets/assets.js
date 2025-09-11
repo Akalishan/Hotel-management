@@ -37,7 +37,8 @@ import listIcon from "./listIcon.svg";
 import uploadArea from "./uploadArea.svg";
 import totalBookingIcon from "./totalBookingIcon.svg";
 import totalRevenueIcon from "./totalRevenueIcon.svg";
-
+import registerImage from './registerImage.png';
+import Googlelogo from './Googlelogo.svg';
 
 export const assets = {
     logo,
@@ -72,6 +73,9 @@ export const assets = {
     uploadArea,
     totalBookingIcon,
     totalRevenueIcon,
+    registerImage,
+    Googlelogo
+
 }
 
 export const cities = [

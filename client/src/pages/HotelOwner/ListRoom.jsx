@@ -5,14 +5,12 @@ import toast from "react-hot-toast";
 
 export const ListRoom = () => {
   const [rooms, setRooms] = useState([]);
-  const { axios, getToken, user, currency } = useAppContext();
+  const { axios,user, currency } = useAppContext();
 
   //Fetch Rooms of the Hotel owner
   const fetchRooms = async () => {
     try {
-      const { data } = await axios.get("/api/rooms/owner", {
-        headers: { Authorization: `Bearer ${await getToken()}` },
-      });
+      const { data } = await axios.get("/api/rooms/owner");
       if (data.success) {
         setRooms(data.rooms);
       } else {
@@ -24,11 +22,7 @@ export const ListRoom = () => {
   };
   //Toggle Availability of the Room
   const toggleAvailability = async (roomId) => {
-    const { data } = await axios.post(
-      "/api/rooms/toggle-availability",
-      { roomId },
-      { headers: { Authorization: `Bearer ${await getToken()}` } }
-    );
+    const { data } = await axios.post("/api/rooms/toggle-availability",{roomId});
     if (data.success) {
       toast.success(data.message);
       fetchRooms();
@@ -48,7 +42,7 @@ export const ListRoom = () => {
         align="left"
         font="outfit"
         tittle="Room Listings"
-        subTittle="View, edoit, or ,anage all listed rooms.keeep the inpormation up-to-date to provide the best experience for users."
+        subTittle="View, edit, or manage all listed rooms. Keep the information up-to-date to provide the best experience for users."
       />
       <p className="text-gray-500 mt-8">All Rooms</p>
       <div className="w-full max-w-3xl text-left border border-gray-300 rounded-lg max-h-80 overflow-y-scroll mt-3">
@@ -68,7 +62,7 @@ export const ListRoom = () => {
             </tr>
           </thead>
           <tbody className="text-sm">
-            {roomsDummyData.map((item, index) => (
+            {rooms.map((item, index) => (
               <tr key={index}>
                 <td className="py-3 px-4 text-gray-700 border-t border-gray-300">
                   {item.roomType}
