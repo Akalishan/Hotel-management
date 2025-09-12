@@ -9,9 +9,7 @@ export const MyBooking = () => {
   const [bookings, setBookings] = useState([]);
   const fetchUserBookings = async () => {
     try {
-      const { data } = await axios.get("/api/bookings/user", {
-        header: { Authorization: `Bearer ${await getToken()}` },
-      });
+      const { data } = await axios.get("/api/bookings/user");
       if (data.success) {
         setBookings(data.bookings);
       } else {
@@ -57,7 +55,6 @@ export const MyBooking = () => {
                 <p className="font-playfair text-2xl">
                   {booking.hotel.name}
                   <span className="font-inter text-sm">
-                    {" "}
                     ({booking.room.roomType})
                   </span>
                 </p>

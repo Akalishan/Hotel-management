@@ -1,5 +1,5 @@
 import Hotel from "../models/Hotel.js";
-import cloudinary from "cloudinary";
+import cloudinary from "../config/cloudinary.js";
 import Room from "../models/Room.js";
 //Api to create anew room controller
 

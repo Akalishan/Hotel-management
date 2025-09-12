@@ -2,57 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
-const Navbar = () => {
-  const BookIcon = () => (
-    <svg
-      className="w-4 h-4 text-gray-700"
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 3v14m7 0v4"
-      />
-    </svg>
-  );
-  const UserIcon = () => (
-    <svg
-      className="w-5 h-5"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-      />
-    </svg>
-  );
-  const ChevronDownIcon = () => (
-    <svg
-      className="w-4 h-4"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M19 9l-7 7-7-7"
-      />
-    </svg>
-  );
 
+import { CgProfile } from "react-icons/cg";
+import { FiBook, FiLogOut, FiMenu, FiX } from "react-icons/fi";
+import { FaChevronDown } from "react-icons/fa";
+
+const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Hotels", path: "/rooms" },
@@ -68,19 +23,19 @@ const Navbar = () => {
 
   const { user, navigate, isOwner, setShowHotelReg, setIsLogin, logout } =
     useAppContext();
-  console.log(user);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   useEffect(() => {
     if (location.pathname !== "/") {
       setIsScrolled(true);
@@ -95,10 +50,11 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location.pathname]);
+
   const profileMenuItems = [
     {
       label: "My Profile",
-      icon: UserIcon,
+      icon: CgProfile,
       onClick: () => {
         navigate("/profile");
         setIsProfileOpen(false);
@@ -106,58 +62,15 @@ const Navbar = () => {
     },
     {
       label: "My Bookings",
-      icon: BookIcon,
+      icon: FiBook,
       onClick: () => {
         navigate("/my-bookings");
         setIsProfileOpen(false);
       },
     },
-
-    {
-      label: "Settings",
-      icon: () => (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      ),
-      onClick: () => {
-        navigate("/settings");
-        setIsProfileOpen(false);
-      },
-    },
     {
       label: "Logout",
-      icon: () => (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-          />
-        </svg>
-      ),
+      icon: FiLogOut,
       onClick: () => {
         logout();
         setIsProfileOpen(false);
@@ -165,9 +78,10 @@ const Navbar = () => {
       className: "text-red-600 hover:bg-red-50",
     },
   ];
+
   return (
     <nav
-      className={`fixed top-0 left-0  w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
+      className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 ${
         isScrolled
           ? "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4"
           : "py-4 md:py-6"
@@ -217,14 +131,6 @@ const Navbar = () => {
 
       {/* Desktop Right */}
       <div className="hidden md:flex items-center gap-4">
-        <img
-          src={assets.searchIcon}
-          alt="search"
-          className={`${
-            isScrolled && "invert"
-          } h-7 transition-all duration-500`}
-        />
-
         {user ? (
           <div className="relative" ref={profileRef}>
             <button
@@ -240,10 +146,10 @@ const Navbar = () => {
                   isScrolled ? "bg-gray-300" : "bg-white/30"
                 }`}
               >
-                <UserIcon />
+                <CgProfile className="w-5 h-5" />
               </div>
               <span className="hidden lg:block">{user.username}</span>
-              <ChevronDownIcon />
+              <FaChevronDown className="w-4 h-4" />
             </button>
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-10">
@@ -272,7 +178,7 @@ const Navbar = () => {
                         item.className || ""
                       }`}
                     >
-                      <item.icon />
+                      <item.icon className="w-5 h-5" />
                       {item.label}
                     </button>
                   ))}
@@ -293,11 +199,9 @@ const Navbar = () => {
       </div>
 
       {/* Mobile Menu Button */}
-
       <div className="flex items-center gap-3 md:hidden">
         {user && (
           <div className="relative" ref={profileRef}>
-            {/* Mobile Profile Button */}
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
@@ -306,13 +210,11 @@ const Navbar = () => {
                   : "bg-white/20 text-white"
               }`}
             >
-              <UserIcon />
+              <CgProfile className="w-5 h-5" />
             </button>
 
-            {/* Mobile Profile Dropdown */}
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-10">
-                {/* User Info Header */}
                 <div className="px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-medium text-gray-900">
                     {user.username}
@@ -327,7 +229,6 @@ const Navbar = () => {
                   )}
                 </div>
 
-                {/* Menu Items */}
                 <div className="py-1">
                   {profileMenuItems.map((item, index) => (
                     <button
@@ -337,7 +238,7 @@ const Navbar = () => {
                         item.className || ""
                       }`}
                     >
-                      <item.icon />
+                      <item.icon className="w-5 h-5" />
                       {item.label}
                     </button>
                   ))}
@@ -347,12 +248,17 @@ const Navbar = () => {
           </div>
         )}
 
-        <img
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          src={assets.menuIcon}
-          alt=""
-          className={`${isScrolled && "invert"} h-4 cursor-pointer`}
-        />
+        {isMenuOpen ? (
+          <FiX
+            onClick={() => setIsMenuOpen(false)}
+            className={`${isScrolled && "invert"} h-6 w-6 cursor-pointer`}
+          />
+        ) : (
+          <FiMenu
+            onClick={() => setIsMenuOpen(true)}
+            className={`${isScrolled && "invert"} h-6 w-6 cursor-pointer`}
+          />
+        )}
       </div>
 
       {/* Mobile Menu */}
@@ -365,7 +271,7 @@ const Navbar = () => {
           className="absolute top-4 right-4"
           onClick={() => setIsMenuOpen(false)}
         >
-          <img src={assets.closeIcon} alt="close-menu" className="h-6.5" />
+          <FiX className="h-6 w-6" />
         </button>
 
         {navLinks.map((link, i) => (

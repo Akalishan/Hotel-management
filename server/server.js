@@ -4,13 +4,11 @@ import cors from "cors";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/userRoutes.js";
 import hotelRouter from "./routes/hotelRoutes.js";
-import connectCloudinary from "./config/cloudinary.js";
 import roomRouter from "./routes/roomRoute.js";
 import bookingRouter from "./routes/bookingRoutes.js";
 import cookieParser from "cookie-parser";
 
 connectDB(); 
-connectCloudinary();
 const app = express();
 app.use(cookieParser());
 app.use(cors({

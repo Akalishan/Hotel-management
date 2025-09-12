@@ -18,6 +18,10 @@ const userSchema = mongoose.Schema(
     },
     role: { type: String, enum: ["hotelOwner", "user"], default: "user" },
     recentSearchCities: [{ type: String, required: true }],
+    NIC: { type: String, default: null },
+    address: { type: String, default: null },
+    phone: { type: String, default: null },
+    dateOfBirth: { type: Date, default: null },
   },
   { timestamps: true }
 );

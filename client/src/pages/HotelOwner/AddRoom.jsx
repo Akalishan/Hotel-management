@@ -5,7 +5,7 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
 export const AddRoom = () => {
-  const { axios, getToken } = useAppContext();
+  const { axios } = useAppContext();
 
   const [images, setImages] = useState({
     1: null,
@@ -32,7 +32,7 @@ export const AddRoom = () => {
       !inputs.roomType ||
       !inputs.pricePerNight ||
       !inputs.amenities ||
-      !Object.values(images).some((image) => images)
+      !Object.values(images).some((image) => image)
     ) {
       toast.error("please fill the all the details");
       return;
@@ -44,39 +44,41 @@ export const AddRoom = () => {
       formData.append("pricePerNight", inputs.pricePerNight);
 
       //converting  Amenities to array & keeping only enabled amenities
-      const amenities = object
-        .keys(inputs.amenities)
-        .filter((key) => inputs.amenities[key]);
+      const amenities = Object.keys(inputs.amenities).filter(
+        (key) => inputs.amenities[key]
+      );
       formData.append("amenities", JSON.stringify(amenities));
 
       //Adding Images to FormData
-      object.keys(images).forEach((key) => {
+      Object.keys(images).forEach((key) => {
         images[key] && formData.append("images", images[key]);
       });
       const { data } = await axios.post("/api/rooms/", formData, {
-        Headers: { Authorization: `Bearer ${await getToken()}` },
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
       if (data.success) {
         toast.success(data.message);
         setInputs({
-          roomType:'',
-          pricePerNight:0,
-          amenities:{
-            'Free Wifi':false,
-            'Free Breakfast':false,
-            'Room Service':false,
-            'Mountain View':false,
-            'pool Access':false
-          }
-        })
-        setImages({1:null,2:null,3:null,4:null})
-      }else{
-        toast.error(data.message)
+          roomType: "",
+          pricePerNight: 0,
+          amenities: {
+            "Free Wifi": false,
+            "Free Breakfast": false,
+            "Room Service": false,
+            "Mountain View": false,
+            "pool Access": false,
+          },
+        });
+        setImages({ 1: null, 2: null, 3: null, 4: null });
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
-    }finally{
-      setLoading(false)
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -92,7 +94,7 @@ export const AddRoom = () => {
         <p className="text-gray-800 mt-10">Images</p>
         <div className="grid grid-cols-2 sm:flex gap-4 my-2 flex-wrap">
           {Object.keys(images).map((key) => (
-            <label htmlFor={"roomImage${key}"} key={key}>
+            <label htmlFor={`roomImage${key}`} key={key}>
               <img
                 className="max-h-13 cursor-pointer opacity-80"
                 src={
@@ -105,7 +107,7 @@ export const AddRoom = () => {
               <input
                 type="file"
                 accept="image/*"
-                id={"roomImage${key}"}
+                id={`roomImage${key}`}
                 hidden
                 onChange={(e) =>
                   setImages({ ...images, [key]: e.target.files[0] })
@@ -153,7 +155,7 @@ export const AddRoom = () => {
             <div key={index}>
               <input
                 type="checkbox"
-                id={"amenities${index+1}"}
+                id={`amenities${index + 1}`}
                 checked={inputs.amenities[amenity]}
                 onChange={() =>
                   setInputs({
@@ -165,12 +167,15 @@ export const AddRoom = () => {
                   })
                 }
               />
-              <label htmlFor={"amenities${index+1}"}> {amenity}</label>
+              <label htmlFor={`amenities${index + 1}`}> {amenity}</label>
             </div>
           ))}
         </div>
-        <button className="bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer " disabled={loading}>
-          {loading ? 'Adding..' : "Add Room"}
+        <button
+          className="bg-primary text-white px-8 py-2 rounded mt-8 cursor-pointer "
+          disabled={loading}
+        >
+          {loading ? "Adding.." : "Add Room"}
         </button>
       </form>
     </div>

@@ -137,7 +137,7 @@ export const logoutUser = async (req, res) => {
 export const getUserData = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select(
-      "username role recentSearchCities"
+      "username email phone image dateOfBirth address NIC role recentSearchCities"
     );
 
     if (!user) {
@@ -150,6 +150,12 @@ export const getUserData = async (req, res) => {
       username: user.username,
       role: user.role,
       recentSearchCities: user.recentSearchCities || [],
+      email: user.email,
+      phone: user.phone,
+      image: user.image,
+      dateOfBirth: user.dateOfBirth,
+      address: user.address,
+      NIC: user.NIC
     }
     res.json({
       success: true,

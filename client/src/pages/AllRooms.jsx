@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { assets, facilityIcons, roomsDummyData } from "../assets/assets";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { StarRating } from "../components/StarRating";
 import { useAppContext } from "../context/AppContext";
 
@@ -47,7 +47,11 @@ export const AllRooms = () => {
     "1000 to 2000",
     "2000 to 3000",
   ];
-  const sortOptions = ["Price Low to High", "Price High to Low", "Newst First"];
+  const sortOptions = [
+    "Price Low to High",
+    "Price High to Low",
+    "Newest First",
+  ];
 
   //handle changes for filters and sorting
   const handleFilterChange = (checked, value, type) => {
@@ -105,7 +109,7 @@ export const AllRooms = () => {
   const filterDestination = (room) => {
     const destination = searchParams.get("destination");
     if (!destination) return true;
-    return room.hotel.city.toLowercase().includes(destination.toLowerCase());
+    return room.hotel.city.toLowerCase().includes(destination.toLowerCase());
   };
 
   // Filter and sort rooms based on the selected filters and sort option
@@ -212,7 +216,9 @@ export const AllRooms = () => {
             >
               {openFilters ? "HIDE" : "SHOW"}
             </span>
-            <span className="hidden lg:block">CLEAR</span>
+            <span className="hidden lg:block" onClick={clearFilters}>
+              CLEAR
+            </span>
           </div>
         </div>
         <div
@@ -229,7 +235,9 @@ export const AllRooms = () => {
                 key={index}
                 label={room}
                 selected={selectedFilters.roomType.includes(room)}
-                onchange={(checked) => (checked, room, "roomType")}
+                onchange={(checked) =>
+                  handleFilterChange(checked, room, "roomType")
+                }
               />
             ))}
           </div>
@@ -240,7 +248,9 @@ export const AllRooms = () => {
                 key={index}
                 label={`${currency} ${range}`}
                 selected={selectedFilters.priceRange.includes(range)}
-                onchange={(checked) => (checked, range, "roomType")}
+                onchange={(checked) =>
+                  handleFilterChange(checked, range, "priceRange")
+                }
               />
             ))}
           </div>
