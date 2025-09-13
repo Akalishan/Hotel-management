@@ -18,6 +18,8 @@ import Experience from "./pages/Experience";
 import About from "./pages/About";
 import AdminExperiences from "./pages/HotelOwner/AdminExperiences";
 import {Loader} from "./components/Loader";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
   const { showHotelReg, isLogin } = useAppContext();
@@ -37,6 +39,8 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/Experience" element={<Experience />} />
           <Route path="/About" element={<About />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/owner" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />

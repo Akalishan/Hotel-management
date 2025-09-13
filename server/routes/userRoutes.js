@@ -6,6 +6,8 @@ import {
   loginUser,
   logoutUser,
   storeRecentSearchedCities,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/userController.js";
 import upload from "../middleware/multer.js";
 import {
@@ -22,5 +24,7 @@ userRouter.get("/", protect, getUserData);
 userRouter.post("/store-recent-search", protect, storeRecentSearchedCities);
 userRouter.put("/profile", protect, upload.single("image"), updateProfile);
 userRouter.put("/change-password", protect, changePassword);
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password/:token", resetPassword);
 
 export default userRouter;

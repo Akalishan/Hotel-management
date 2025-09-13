@@ -1,6 +1,8 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import generateToken from "../utils/JWTTokenGenerate.js";
+import crypto from "crypto";
+import transporter from "../config/nodemailer.js";
 
 //api to create the account
 export const createUser = async (req, res) => {
@@ -145,7 +147,7 @@ export const getUserData = async (req, res) => {
         .status(404)
         .json({ success: false, message: "User not found" });
     }
-    const userData={
+    const userData = {
       id: user._id,
       username: user.username,
       role: user.role,
@@ -155,11 +157,11 @@ export const getUserData = async (req, res) => {
       image: user.image,
       dateOfBirth: user.dateOfBirth,
       address: user.address,
-      NIC: user.NIC
-    }
+      NIC: user.NIC,
+    };
     res.json({
       success: true,
-      userData
+      userData,
     });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -176,7 +178,7 @@ export const storeRecentSearchedCities = async (req, res) => {
         .json({ success: false, message: "City is required" });
     }
     const user = await User.findById(req.user._id);
-    
+
     if (!user) {
       return res
         .status(404)
@@ -197,5 +199,85 @@ export const storeRecentSearchedCities = async (req, res) => {
     });
   } catch (error) {
     res.json({ success: false, message: error.message });
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Generate token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // valid for 10 min
+    await user.save();
+
+    // Reset URL
+    const resetUrl = `${req.headers.origin}/reset-password/${resetToken}`;
+
+    // Send email (configure transporter)
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "Password Reset",
+      html: `<p>You requested a password reset</p>
+             <p>Click this <a href="${resetUrl}">link</a> to reset your password</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ success: true, message: "Password reset email sent" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// POST /api/user/reset-password/:token
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const strongPasswordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+      if (!strongPasswordRegex.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Password must be at least 6 characters long, include uppercase, lowercase, a number, and a special character",
+        });
+      }
+    // Hash token
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
+    }
+
+    // Update password
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.json({ success: true, message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
