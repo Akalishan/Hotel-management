@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "./components/Navbar";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "./pages/Home";
@@ -18,6 +17,7 @@ import Profile from "./pages/Profile";
 import Experience from "./pages/Experience";
 import About from "./pages/About";
 import AdminExperiences from "./pages/HotelOwner/AdminExperiences";
+import {Loader} from "./components/Loader";
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
   const { showHotelReg, isLogin } = useAppContext();
@@ -33,16 +33,16 @@ const App = () => {
           <Route path="/rooms" element={<AllRooms />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
           <Route path="/my-bookings" element={<MyBooking />} />
+          <Route path="/loader/:nextUrl" element={<Loader />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/Experience" element={<Experience />} />
+          <Route path="/About" element={<About />} />
           <Route path="/owner" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />
             <Route path="list-room" element={<ListRoom />} />
             <Route path="adminExperiences" element={<AdminExperiences />} />
           </Route>
-          <Route path="/my-bookings" element={<MyBooking />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/Experience" element={<Experience />} />
-          <Route path="/About" element={<About />} />
         </Routes>
       </div>
       <Footer />
