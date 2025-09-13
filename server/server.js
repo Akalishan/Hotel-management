@@ -7,6 +7,7 @@ import hotelRouter from "./routes/hotelRoutes.js";
 import roomRouter from "./routes/roomRoute.js";
 import bookingRouter from "./routes/bookingRoutes.js";
 import cookieParser from "cookie-parser";
+import experienceRouter from "./routes/experienceRoutes.js";
 
 connectDB(); 
 const app = express();
@@ -27,7 +28,7 @@ app.use('/api/user',userRouter);
 app.use('/api/hotels',hotelRouter);
 app.use('/api/rooms',roomRouter);
 app.use("/api/bookings",bookingRouter);
-
+app.use("/api/experiences", experienceRouter);
 
 const PORT = process.env.PORT || 5000;
 

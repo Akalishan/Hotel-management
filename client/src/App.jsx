@@ -15,6 +15,9 @@ import { Toaster } from "react-hot-toast";
 import { useAppContext } from "./context/AppContext";
 import { Login } from "./components/Login";
 import Profile from "./pages/Profile";
+import Experience from "./pages/Experience";
+import About from "./pages/About";
+import AdminExperiences from "./pages/HotelOwner/AdminExperiences";
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
   const { showHotelReg, isLogin } = useAppContext();
@@ -34,9 +37,12 @@ const App = () => {
             <Route index element={<Dashboard />} />
             <Route path="add-room" element={<AddRoom />} />
             <Route path="list-room" element={<ListRoom />} />
+            <Route path="adminExperiences" element={<AdminExperiences />} />
           </Route>
           <Route path="/my-bookings" element={<MyBooking />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/Experience" element={<Experience />} />
+          <Route path="/About" element={<About />} />
         </Routes>
       </div>
       <Footer />
