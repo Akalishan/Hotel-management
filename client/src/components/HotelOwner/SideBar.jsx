@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { MdDashboard, MdAdd, MdList, MdExplore } from "react-icons/md";
+import { MdDashboard, MdAdd, MdList, MdExplore, MdHome } from "react-icons/md";
 
 export const SideBar = () => {
   const sidebarLinks = [
+    { name: "Home", path: "/", icon: MdHome },
     { name: "Dashboard", path: "/owner", icon: MdDashboard },
     { name: "Add Room", path: "/owner/add-room", icon: MdAdd },
     { name: "List Room", path: "/owner/list-room", icon: MdList },

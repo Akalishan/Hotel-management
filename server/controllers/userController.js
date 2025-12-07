@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import generateToken from "../utils/JWTTokenGenerate.js";
 import crypto from "crypto";
 import transporter from "../config/nodemailer.js";
+import Newsletter from "../models/NewsLetter.js";
 
 //api to create the account
 export const createUser = async (req, res) => {
@@ -281,3 +282,15 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+//api to subscribe newsletter
+export const subscribeNewsletter = async (req, res) => {
+  try {
+    const { email } = req.body;
+    await Newsletter.create({ email });
+    res.json({ success: true, message: "Subscribed!" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
