@@ -79,7 +79,8 @@ const About = () => {
     {
       year: "2021",
       title: "10 Hotel Partners",
-      description: "Reached our first milestone with 10 premium hotels onboard.",
+      description:
+        "Reached our first milestone with 10 premium hotels onboard.",
     },
     {
       year: "2022",
@@ -171,10 +172,7 @@ const About = () => {
                     </a>
                   )}
                   {member.social.instagram && (
-                    <a
-                      href={member.social.instagram}
-                      className="text-pink-500"
-                    >
+                    <a href={member.social.instagram} className="text-pink-500">
                       <FaInstagram />
                     </a>
                   )}
@@ -220,14 +218,20 @@ const About = () => {
             Have questions or partnership ideas? Reach out to us anytime.
           </p>
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <div className="flex items-center gap-2">
+            <a
+              href="tel:+1234567890"
+              className="flex items-center gap-2 hover:text-white/80 transition-colors"
+            >
               <FiPhone className="w-5 h-5" />
               <span>+1 (234) 567-890</span>
-            </div>
-            <div className="flex items-center gap-2">
+            </a>
+            <a
+              href="mailto:support@hotelbookings.com?subject=Inquiry from Hotel Bookings Website"
+              className="flex items-center gap-2 hover:text-white/80 transition-colors"
+            >
               <FiMail className="w-5 h-5" />
               <span>support@hotelbookings.com</span>
-            </div>
+            </a>
           </div>
         </div>
       </div>
