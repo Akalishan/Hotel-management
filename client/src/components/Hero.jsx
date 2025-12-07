@@ -6,9 +6,24 @@ import heroImage from "../assets/heroImage.png";
 export const Hero = () => {
   const [destination, setDestination] = useState("");
   const { navigate, axios, setSearchedCities } = useAppContext();
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guests, setGuests] = useState(1);
+  const today = new Date().toISOString().split("T")[0];
   const onSearch = async (e) => {
     e.preventDefault();
-    navigate(`/rooms?destination=${destination}`);
+    if (!checkIn || !checkOut) {
+      alert("Please select both check-in and check-out dates.");
+      return;
+    }
+
+    if (checkOut <= checkIn) {
+      alert("Checkout date must be after check-in date.");
+      return;
+    }
+    navigate(
+      `/rooms?destination=${destination}&checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`
+    );
     //call api to save recent searched city
     await axios.post("/api/user/store-recent-search", {
       recentSearchCity: destination,
@@ -68,13 +83,16 @@ export const Hero = () => {
         <div>
           <div className="flex items-center gap-2">
             <img src={assets.calenderIcon} alt="" className="h-4" />
-
             <label htmlFor="checkIn">Check in</label>
           </div>
           <input
             id="checkIn"
             type="date"
-            className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
+            min={today}
+            value={checkIn}
+            onChange={(e) => setCheckIn(e.target.value)}
+            className="rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
+            required
           />
         </div>
 
@@ -87,7 +105,11 @@ export const Hero = () => {
           <input
             id="checkOut"
             type="date"
-            className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
+            min={checkIn || today}
+            value={checkOut}
+            onChange={(e) => setCheckOut(e.target.value)}
+            className="rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none"
+            required
           />
         </div>
 
@@ -96,16 +118,17 @@ export const Hero = () => {
           <input
             min={1}
             max={4}
-            id="guests"
+            id="guests" 
             type="number"
-            className=" rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none  max-w-16"
-            placeholder="1"
+            value={guests}
+            onChange={(e) => setGuests(e.target.value)}
+            className="rounded border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none max-w-16"
+            required
           />
         </div>
 
         <button className="flex items-center justify-center gap-1 rounded-md bg-black py-3 px-4 text-white my-auto cursor-pointer max-md:w-full max-md:py-1">
           <img src={assets.searchIcon} alt="searchIcon" className="h-7" />
-
           <span>Search</span>
         </button>
       </form>
