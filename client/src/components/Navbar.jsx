@@ -19,6 +19,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const mobileProfileRef = useRef(null);
   const location = useLocation();
 
   const { user, navigate, isOwner, setShowHotelReg, setIsLogin, logout } =
@@ -27,7 +28,9 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
+        if (mobileProfileRef.current && !mobileProfileRef.current.contains(event.target)) {
+          setIsProfileOpen(false);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -99,9 +102,9 @@ const Navbar = () => {
       {/* Desktop Nav */}
       <div className="hidden md:flex items-center gap-4 lg:gap-8">
         {navLinks.map((link, i) => (
-          <a
+          <Link
             key={i}
-            href={link.path}
+            to={link.path}
             className={`group flex flex-col gap-0.5 ${
               isScrolled ? "text-gray-700" : "text-white"
             }`}
@@ -112,7 +115,7 @@ const Navbar = () => {
                 isScrolled ? "bg-gray-700" : "bg-white"
               } h-0.5 w-0 group-hover:w-full transition-all duration-300`}
             />
-          </a>
+          </Link>
         ))}
 
         {user && (
@@ -201,7 +204,7 @@ const Navbar = () => {
       {/* Mobile Menu Button */}
       <div className="flex items-center gap-3 md:hidden">
         {user && (
-          <div className="relative" ref={profileRef}>
+          <div className="relative" ref={mobileProfileRef}>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
@@ -275,9 +278,9 @@ const Navbar = () => {
         </button>
 
         {navLinks.map((link, i) => (
-          <a key={i} href={link.path} onClick={() => setIsMenuOpen(false)}>
+          <Link key={i} to={link.path} onClick={() => setIsMenuOpen(false)}>
             {link.name}
-          </a>
+          </Link>
         ))}
 
         {user && (
