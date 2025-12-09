@@ -26,7 +26,7 @@ export const MyBooking = () => {
         bookingId,
       });
       if (data.success) {
-        window.location.href = data.url;
+        window.location.href = data.URL;
       } else {
         toast.error(data.message);
       }

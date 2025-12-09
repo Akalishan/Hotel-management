@@ -32,7 +32,7 @@ export const AppProvider = ({ children }) => {
       toast.error(error.message);
     }
   };
-   console.log(user);
+  console.log(user);
   const fetchUser = async () => {
     try {
       const { data } = await axios.get("/api/user");
@@ -69,8 +69,9 @@ export const AppProvider = ({ children }) => {
       navigate("/");
     }
   };
-
- 
+  const getToken = async () => {
+    return localStorage.getItem("token");
+  };
 
   useEffect(() => {
     fetchRooms();
@@ -125,6 +126,7 @@ export const AppProvider = ({ children }) => {
     logout,
     isLogin,
     setIsLogin,
+    getToken
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

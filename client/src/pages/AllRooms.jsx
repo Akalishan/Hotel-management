@@ -86,7 +86,7 @@ export const AllRooms = () => {
       selectedFilters.priceRange.length === 0 ||
       selectedFilters.priceRange.some((range) => {
         const [min, max] = range.split("to").map(Number);
-        return room.pricePerNight >= min && room.pricePerNight <= max;
+        return room.price >= min && room.price <= max;
       })
     );
   };
@@ -94,10 +94,10 @@ export const AllRooms = () => {
   //function to sort rooms based on the selected sort option
   const sortRooms = (a, b) => {
     if (selectedSort === "Price Low to High") {
-      return a.pricePerNight - b.pricePerNight;
+      return a.price - b.price;
     }
     if (selectedSort === "Price High to Low") {
-      return b.pricePerNight - a.pricePerNight;
+      return b.price - a.price;
     }
     if (selectedSort === "Newest First") {
       return new Date(b.createdAt) - new Date(a.createdAt);
@@ -195,7 +195,7 @@ export const AllRooms = () => {
               </div>
               {/*Room price per night */}
               <p className="text-xl font-medium text-gray-700">
-                ${room.pricePerNight}/night
+                ${room.price}/night
               </p>
             </div>
           </div>

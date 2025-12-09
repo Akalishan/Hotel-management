@@ -58,7 +58,7 @@ export const createBooking = async (req, res) => {
     }
     //GET total price for Room
     const roomData = await Room.findById(room).populate("hotel");
-    let totalPrice = roomData.pricePerNight;
+    let totalPrice = roomData.price;
 
     //Calculate total price based on number of nights
     const checkIn = new Date(checkInDate);
@@ -77,11 +77,12 @@ export const createBooking = async (req, res) => {
       guests: +guests,
     });
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: req.user.email,
-      subject: "Booking Confirmation",
-      html:`
+    if (req.user.email) {
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: req.user.email,
+        subject: "Booking Confirmation",
+        html: `
       <h2>Your Booking Details</h2>
       <p>Dear ${req.user.username},</p>
       <p>Thank you for your booking! Here are your booking details:</p>
@@ -95,11 +96,15 @@ export const createBooking = async (req, res) => {
       </ul>
       <p>We hope you have a pleasant stay!</p>
       <p>If you have any questions or need assistance, feel free to contact us.</p>
-      `
-    };
-    await transporter.sendMail(mailOptions);
+      `,
+      };
+      await transporter.sendMail(mailOptions);
+    } else {
+      console.log("Email not sent — req.user.email is missing");
+    }
     res.json({ success: true, message: "Booking created successfully" });
   } catch (error) {
+    console.log(error);
     res.json({ success: false, message: "failed to create booking" });
   }
 };
@@ -123,60 +128,68 @@ export const getUserBookings = async (req, res) => {
 export const getHotelBookings = async (req, res) => {
   try {
     const hotel = await Hotel.findOne({ owner: req.user._id });
-  if (!hotel) {
-    return res.status(404).json({ success: false, message: "Hotel not found" });
-  }
-  const bookings = await Booking.find({ hotel: hotel._id })
-    .populate("room hotel user")
-    .sort({ createdAt: -1 });
+    if (!hotel) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Hotel not found" });
+    }
+    const bookings = await Booking.find({ hotel: hotel._id })
+      .populate("room hotel user")
+      .sort({ createdAt: -1 });
 
-  //Total Bookings
-  const totalBookings = bookings.length;
-  //Total revenue
-  const totalRevenue = bookings.reduce(
-    (acc, booking) => acc + booking.totalPrice,0);
-  res.json({
-    success: true,
-    dashboardData: { totalBookings, totalRevenue, bookings }});
+    //Total Bookings
+    const totalBookings = bookings.length;
+    //Total revenue
+    const totalRevenue = bookings.reduce(
+      (acc, booking) => acc + booking.totalPrice,
+      0
+    );
+    res.json({
+      success: true,
+      dashboardData: { totalBookings, totalRevenue, bookings },
+    });
   } catch (error) {
     res.json({
-    success: false,message:"Failed to fetch bookings"});
+      success: false,
+      message: "Failed to fetch bookings",
+    });
   }
 };
 
-export const stripePayment=async(req,res)=>{
+export const stripePayment = async (req, res) => {
   try {
-    const{bookingId}=req.body;
-    
+    const { bookingId } = req.body;
+
     const booking = await Booking.findById(bookingId);
     const roomData = await Room.findById(booking.room).populate("hotel");
     const totalPrice = booking.totalPrice;
-    const {origin}=req.headers;
+    const { origin } = req.headers;
 
-    const line_items=[{
-      price_data:{
-        currency:'usd',
-        product_data:{
-          name:roomData.name,
+    const line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: roomData.name,
+          },
+          unit_amount: totalPrice * 100,
         },
-        unit_amount:totalPrice * 100
+        quantity: 1,
       },
-      quantity:1,
-    }]
-    
+    ];
+
     //create checkout session
     const session = await stripeInstance.checkout.sessions.create({
       line_items,
-      mode:'payment',
-      success_url:`${origin}/loader/my-bookings`,
-      cancel_url:`${origin}/my-bookings`,
-      metadata:{
+      mode: "payment",
+      success_url: `${origin}/loader/my-bookings`,
+      cancel_url: `${origin}/my-bookings`,
+      metadata: {
         bookingId,
-      }
+      },
     });
-    res.json({success:true,URL:session.url})
+    res.json({ success: true, URL: session.url });
   } catch (error) {
     res.json({ success: false, message: "Payment failed" });
   }
 };
-

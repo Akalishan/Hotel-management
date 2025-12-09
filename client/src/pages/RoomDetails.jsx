@@ -18,9 +18,13 @@ export const RoomDetails = () => {
   //check if the Room is Available
   const checkAvailability = async () => {
     try {
-      //check is check-In date is greater than check-out Date
-      if (checkInDate > checkOutDate) {
-        toast.error("Check-In date should be less than check-out date");
+      if (!checkInDate || !checkOutDate) {
+        toast.error("Please select both check-in and check-out dates.");
+        return;
+      }
+
+      if (new Date(checkInDate) >= new Date(checkOutDate)) {
+        toast.error("Check-Out date must be after Check-In date");
         return;
       }
       const { data } = await axios.post("/api/bookings/check-availability", {
@@ -29,12 +33,11 @@ export const RoomDetails = () => {
         checkOutDate,
       });
       if (data.success) {
-        if (isAvailable) {
-          setIsAvaiilable(true);
+        setIsAvaiilable(data.isAvailable);
+        if (data.isAvailable) {
           toast.success("Room is Available");
         } else {
-          setIsAvaiilable(false);
-          toast.error("Room is not available");
+          toast.error("Room is NOT available for selected dates");
         }
       } else {
         toast.error(data.message);
@@ -49,7 +52,7 @@ export const RoomDetails = () => {
     try {
       e.preventDefault();
       if (!isAvailable) {
-        return checkAvailability;
+        return checkAvailability();
       } else {
         const { data } = await axios.post(
           "/api/bookings/book",
@@ -60,7 +63,7 @@ export const RoomDetails = () => {
             guests,
             paymentMethod: "Pay At Hotel",
           },
-          { header: { Authorization: `Bearer ${await getToken()}` } }
+          { headers: { Authorization: `Bearer ${await getToken()}` } }
         );
         if (data.success) {
           toast.success(data.message);
@@ -150,7 +153,7 @@ export const RoomDetails = () => {
             </div>
           </div>
           {/*room price*/}
-          <p className="text-2xl font-medium">${room.pricePerNight}/night</p>
+          <p className="text-2xl font-medium">${room.price}/night</p>
         </div>
         {/*Check in check out form*/}
         <form
@@ -163,13 +166,12 @@ export const RoomDetails = () => {
                 check-In
               </label>
               <input
-                onChange={(e) => setCheckInDate(e.target.value)}
-                min={checkInDate}
-                disabled={!checkInDate}
-                type="date"
                 id="checkInDate"
-                placeholder="check-In"
-                className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
+                type="date"
+                min={new Date().toISOString().split("T")[0]}
+                value={checkInDate || ""}
+                onChange={(e) => setCheckInDate(e.target.value)}
+                className="rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
                 required
               />
             </div>
@@ -180,12 +182,12 @@ export const RoomDetails = () => {
                 check-Out
               </label>
               <input
-                onChange={(e) => setCheckOutDate(e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-                type="date"
                 id="checkOutDate"
-                placeholder="check-Out"
-                className="w-full rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
+                type="date"
+                min={checkInDate || new Date().toISOString().split("T")[0]}
+                value={checkOutDate || ""}
+                onChange={(e) => setCheckOutDate(e.target.value)}
+                className="rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
                 required
               />
             </div>
@@ -195,11 +197,12 @@ export const RoomDetails = () => {
                 Guests
               </label>
               <input
-                onChange={(e) => setGuests(e.target.value)}
-                value={guests}
-                type="number"
                 id="guests"
-                placeholder="1"
+                type="number"
+                min={1}
+                max={4}
+                value={guests}
+                onChange={(e) => setGuests(e.target.value)}
                 className="max-w-20 rounded border border-gray-300 px-3 py-2 mt-1.5 outline-none"
                 required
               />
@@ -256,7 +259,12 @@ export const RoomDetails = () => {
             </div>
           </div>
           <button className="px-6 py-2.5 rounded text-white bg-primary hover:bg-primary-dull transition-all cursor-pointer">
-            Contact Now
+            <a
+              href={`tel:${room?.hotel?.phone}`}
+              className="px-6 py-2.5 rounded text-white bg-primary hover:bg-primary-dull transition-all cursor-pointer"
+            >
+              Contact Now
+            </a>
           </button>
         </div>
       </div>
