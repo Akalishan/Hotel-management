@@ -13,6 +13,9 @@ export const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
   const {
     axios,
     isLogin,
@@ -87,6 +90,25 @@ export const Login = () => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsLogin(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    try {
+      const response = await axios.post("/api/user/forgot-password", { email: forgotEmail });
+      if (response.data.success) {
+        toast.success("Reset link sent to your email");
+        setIsForgotPassword(false);
+        setForgotEmail("");
+      } else {
+        toast.error(response.data.message || "Error sending reset link");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error sending reset link");
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -173,9 +195,13 @@ export const Login = () => {
 
               {isLoginMode && (
                 <div className="w-full flex items-center justify-between mt-8 text-gray-500/80">
-                  <a className="text-sm underline" href="/forgot-password">
+                  <button
+                    type="button"
+                    onClick={() => setIsForgotPassword(true)}
+                    className="text-sm underline hover:text-gray-700 transition"
+                  >
                     Forgot password?
-                  </a>
+                  </button>
                 </div>
               )}
 
@@ -211,6 +237,77 @@ export const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Forgot Password Modal */}
+      {isForgotPassword && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsForgotPassword(false);
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl relative p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setIsForgotPassword(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <IoClose className="w-5 h-5 text-gray-700" />
+            </button>
+
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-2xl text-gray-900 font-medium">
+                Reset Password
+              </h2>
+              <p className="text-sm text-gray-500/90 mt-3 text-center">
+                Enter your email and we'll send you a reset link
+              </p>
+
+              <form onSubmit={handleForgotPassword} className="w-full mt-6">
+                <div className="flex items-center w-full bg-transparent border border-gray-300/60 h-12 rounded-full overflow-hidden pl-6 gap-2">
+                  <MdEmail className="text-gray-500" />
+                  <input
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="bg-transparent text-gray-500/80 placeholder-gray-500/80 outline-none text-sm w-full h-full"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="mt-6 w-full h-11 rounded-full text-white bg-indigo-500 hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {forgotLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Sending...
+                    </div>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(false)}
+                  className="mt-4 w-full h-11 rounded-full text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors"
+                >
+                  Back to Login
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

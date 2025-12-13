@@ -206,6 +206,13 @@ export const storeRecentSearchedCities = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res
@@ -223,21 +230,36 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Reset URL
-    const resetUrl = `${req.headers.origin}/reset-password/${resetToken}`;
+    const resetUrl = `${
+      req.headers.origin || "http://localhost:5173"
+    }/reset-password/${resetToken}`;
 
     // Send email (configure transporter)
+    if (
+      !process.env.SMTP_USER ||
+      !process.env.SMTP_PASS 
+    ) {
+      console.error("Email configuration missing");
+      return res.status(500).json({
+        success: false,
+        message: "Email service not configured. Please contact support.",
+      });
+    }
+
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: user.email,
-      subject: "Password Reset",
+      subject: "Password Reset Request",
       html: `<p>You requested a password reset</p>
-             <p>Click this <a href="${resetUrl}">link</a> to reset your password</p>`,
+             <p>Click this <a href="${resetUrl}">link</a> to reset your password</p>
+             <p>This link will expire in 10 minutes.</p>`,
     };
 
     await transporter.sendMail(mailOptions);
 
     res.json({ success: true, message: "Password reset email sent" });
   } catch (error) {
+    console.error("Forgot password error:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -248,15 +270,15 @@ export const resetPassword = async (req, res) => {
     const { password } = req.body;
 
     const strongPasswordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
-      if (!strongPasswordRegex.test(password)) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Password must be at least 6 characters long, include uppercase, lowercase, a number, and a special character",
-        });
-      }
+    if (!strongPasswordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must be at least 6 characters long, include uppercase, lowercase, a number, and a special character",
+      });
+    }
     // Hash token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -293,4 +315,3 @@ export const subscribeNewsletter = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-
