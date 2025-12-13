@@ -8,29 +8,31 @@ import roomRouter from "./routes/roomRoute.js";
 import bookingRouter from "./routes/bookingRoutes.js";
 import cookieParser from "cookie-parser";
 import experienceRouter from "./routes/experienceRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
-connectDB(); 
+connectDB();
 const app = express();
 app.use(cookieParser());
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-})); //Enable cross-Origin Resource Sharing
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+); //Enable cross-Origin Resource Sharing
 
 //middleware
 app.use(express.json());
 
-
 app.get("/", (req, res) => {
   res.send("API is working");
 });
-app.use('/api/user',userRouter);
-app.use('/api/hotels',hotelRouter);
-app.use('/api/rooms',roomRouter);
-app.use("/api/bookings",bookingRouter);
+app.use("/api/user", userRouter);
+app.use("/api/hotels", hotelRouter);
+app.use("/api/rooms", roomRouter);
+app.use("/api/bookings", bookingRouter);
 app.use("/api/experiences", experienceRouter);
-
+app.use("/api/ai", aiRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
